@@ -14,24 +14,27 @@ config = config['sdk']
 testMode = json.loads(config['TEST_MODE'])
 deepLink = 'test.brightid.org' if testMode else 'node.brightid.org'
 testURL = 'http://test.brightid.org/brightid/v5'
-nodeURL = 'http://node.brightid.org/brightid/v5' if testMode else testURL
-appURL = 'https://app.brightid.org/node/v5' if testMode else testURL
+nodeURL = 'http://node.brightid.org/brightid/v5' if not testMode else testURL
+appURL = 'https://app.brightid.org/node/v5' if not testMode else testURL
 
 
 class BrightIdSDK:
 	# contextId = '0xE8FB09228d1373f931007ca7894a08344B80901c'
-    def checkContext():
+    def checkContext(self):
         response = requests.get(f'{appURL}/verifications/{config["CONTEXT"]}')
         return response.json()
 
-    def checkContextId(contextId:str):
-        contextId = contextId.lower()
+    def checkContextId(self, contextId:str):
         response = requests.get(f'{appURL}/verifications/{config["CONTEXT"]}/{contextId}')
         result = response.json()
         return result
 
-    def sponserContextId(contextId:str):
-        contextId = contextId.lower()
+    def appInfo(self):
+        url = appURL + f'/apps/{config["APP_NAME"]}'
+        response = requests.get(url)
+        return response.json()
+    
+    def sponsorContextId(self, contextId:str):
         URL = nodeURL + '/operations'
         op = {
 			'name': 'Sponsor',
@@ -47,16 +50,39 @@ class BrightIdSDK:
         response = requests.post(URL, json=op)
         return response.json()
 
-    def createDeepLink(contextId):
-        result = f'brightid://link-verification/http:%2f%2f{deepLink}/{config["CONTEXT"]}/{contextId}'
-        return result
+    def createDeepLink(self, contextId):
+        qr = f'brightid://link-verification/http:%2f%2f{deepLink}/{config["CONTEXT"]}/{contextId}'
+        _link = 'http://'+deepLink if testMode else 'https://app.brightid.org'
+        deep = f'{_link}/link-verification/http:%2f%2f{deepLink}/{config["CONTEXT"]}/{contextId}/'
+        return qr, deep
     
-    def addParameter(param, paramType=None, contextId=None):
-        addContext = '' if contextId == None else f'/{contextId}'
-        addParameter = param if paramType == None else f'?{paramType}={param}'
-        url = appURL + addContext + addParameter
+    def addParameter(self, param, paramType=None, contextId=None):
+        addContextId = '' if contextId == None else f'/{contextId}'
+        addParameter = f'?{param}'if paramType == None else f'?{paramType}={param}'
+        url = appURL+ f'/verifications/{config["CONTEXT"]}' + addContextId + addParameter
+        print(url)
         response = requests.get(url)
         return response.json()
+
+    def blockUserVerification(self, contextId, action):
+        '''
+        'sponsorship', 'link', 'verification'
+        '''
+        url = nodeURL + f'/testblocks/{config["APP_NAME"]}/{action}/{contextId}'
+        params = (
+            ('testingKey' ,config['TESTING_KEY']),
+            )
+        print(url)
+        response = requests.put(url, params=params)
+        return response
+    
+    def removeBlockingUser(self, contextId, action):
+        url = nodeURL + f'/testblocks/{config["APP_NAME"]}/{action}/{contextId}'
+        params = (('testingKey' ,config['TESTING_KEY']),)
+        print(url)
+        print(params)
+        response = requests.delete(url, params=params)
+        return response 
 
 
 # Dar panah khoda
