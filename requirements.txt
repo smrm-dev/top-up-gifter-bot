@@ -23,6 +23,8 @@ pep517==0.8.2
 progress==1.5
 pyaes==1.6.1
 pyparsing==2.4.6
+pypng==0.0.20
+PyQRCode==1.2.1
 Pyrogram==1.0.7
 PySocks==1.7.1
 python-dateutil==2.8.1
