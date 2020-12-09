@@ -60,7 +60,6 @@ class BrightIdSDK:
         addContextId = '' if contextId == None else f'/{contextId}'
         addParameter = f'?{param}'if paramType == None else f'?{paramType}={param}'
         url = appURL+ f'/verifications/{config["CONTEXT"]}' + addContextId + addParameter
-        print(url)
         response = requests.get(url)
         return response.json()
 
@@ -72,15 +71,12 @@ class BrightIdSDK:
         params = (
             ('testingKey' ,config['TESTING_KEY']),
             )
-        print(url)
         response = requests.put(url, params=params)
         return response
     
     def removeBlockingUser(self, contextId, action):
         url = nodeURL + f'/testblocks/{config["APP_NAME"]}/{action}/{contextId}'
         params = (('testingKey' ,config['TESTING_KEY']),)
-        print(url)
-        print(params)
         response = requests.delete(url, params=params)
         return response 
 
