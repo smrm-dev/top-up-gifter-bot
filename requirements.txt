@@ -3,7 +3,7 @@ appdirs==1.4.3
 async-lru==1.0.2
 banal==1.0.1
 CacheControl==0.12.6
-certifi==2019.11.28
+certifi==2020.12.5
 chardet==3.0.4
 colorama==0.4.3
 contextlib2==0.6.0
@@ -12,7 +12,7 @@ distlib==0.3.0
 distro==1.4.0
 ed25519==1.5
 html5lib==1.0.1
-idna==2.8
+idna==2.10
 ipaddr==2.2.0
 lockfile==0.12.2
 Mako==1.1.3
@@ -30,10 +30,11 @@ PySocks==1.7.1
 python-dateutil==2.8.1
 python-editor==1.0.4
 pytoml==0.1.21
-requests==2.22.0
+requests==2.25.0
 retrying==1.3.3
 six==1.14.0
 SQLAlchemy==1.3.20
 TgCrypto==1.2.2
-urllib3==1.25.8
+toml==0.10.2
+urllib3==1.26.2
 webencodings==0.5.1

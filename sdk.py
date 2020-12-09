@@ -19,8 +19,7 @@ appURL = 'https://app.brightid.org/node/v5' if not testMode else testURL
 
 
 class BrightIdSDK:
-	# contextId = '0xE8FB09228d1373f931007ca7894a08344B80901c'
-    def createQrCode(deepLink,contextId):
+    def createQrCode(self, deepLink,contextId):
         qrCode = pyqrcode.create(deepLink)
         qrCode.png(contextId+'.png', scale=8)
          
