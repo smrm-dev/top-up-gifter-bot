@@ -10,6 +10,7 @@ class State:
         START: ['link', 'fa', 'en'],
         LINK: ['choose_operator','back'],
         CHOOSE_OPERATOR: ['get_phone', 'back'],
+        GET_PHONE: ['back'],
         CLAIMED: []
     }
 

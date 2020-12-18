@@ -27,7 +27,7 @@ pypng==0.0.20
 PyQRCode==1.2.1
 Pyrogram==1.0.7
 PySocks==1.7.1
-python-brightid==1.1.2
+python-brightid==1.1.5
 python-dateutil==2.8.1
 python-editor==1.0.4
 pytoml==0.1.21

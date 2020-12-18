@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import CallbackQuery, Message
+from pyrogram.types import CallbackQuery, Message, InlineKeyboardMarkup
 from datetime import datetime
 from time import time
 import brightid
@@ -7,6 +7,7 @@ import brightid
 from .User import User
 from .State import State
 from ..TopUpGifter import TopUpGifter
+from .consts import texts, keyborads
 
 
 def equality_filter(data):
@@ -30,6 +31,8 @@ def is_multiple_query():
             user_info = dict(client.users.find_one(id=user_id))
             user = User(user_info)
             query_interval = (datetime.now() - user.last_interaction).seconds
+            user.last_interaction = datetime.now()
+            client.users.update(user.to_dict(), ['id'])
             if query_interval == 0:
                 return True
         return False
@@ -112,14 +115,17 @@ def is_verified_and_not_awarded():
 def not_in_receiving():
     def func(flt, client, query: CallbackQuery):
         user_id = str(query.from_user.id)
-        user_info = dict(client.users.find_one(id=user_id))
-        user = User(user_info)
         with client.db as db:
+            user_info = dict(client.users.find_one(id=user_id))
+            user = User(user_info)
             user_brightid_info = client.node.verifications.get(client.app_name, context_id=user.context_id)
             user_accounts_states = [user_info['state'] for user_info in client.users.find(contextId=user_brightid_info['contextIds'], state=[State.CHOOSE_OPERATOR, State.GET_PHONE, State.CLAIMED])]
             if user_accounts_states:
                 query.answer(text=texts['errors']['in_receiving'][user.language], show_alert=True)
                 return False
+            user.state = State.CHOOSE_OPERATOR
+            user.last_interaction = datetime.now()
+            client.users.update(user.to_dict(), ['id'])
             return True 
     return filters.create(func)
 
@@ -137,18 +143,30 @@ def is_waiting_for_phone():
 
 
 def check_phone():
-    def func(flt, client: TopUpGifter, message: Message):
+    async def func(flt, client: TopUpGifter, message: Message):
         user_id = str(message.from_user.id)
         user_info = dict(client.users.find_one(id=user_id))
         user = User(user_info)
-        if len(message.text) != 11:
-            message.edit_text(text=texts['errors']['again'][user.lan] + '\n' + texts[State.GET_PHONE][user.language])
+        if len(message.text) != 11:         
+            current_message = await message.reply(text=texts['errors']['again'][user.language] + '\n' + texts[State.GET_PHONE][user.language], reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
+            user.current_message_id = current_message.message_id
+            user.last_interaction = datetime.now()
+            client.users.update(user.to_dict(), ['id'])
+            client.db.commit()
             return False
         elif message.text[:2] != '09':
-            message.edit_text(text=texts['errors']['again'][user.lan] + '\n' + texts[State.GET_PHONE][user.language])
+            current_message = await message.reply(text=texts['errors']['again'][user.language] + '\n' + texts[State.GET_PHONE][user.language], reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
+            user.current_message_id = current_message.message_id
+            user.last_interaction = datetime.now()
+            client.users.update(user.to_dict(), ['id'])
+            client.db.commit()
             return False
         elif not message.text.isdigit():
-            message.edit_text(text=texts['errors']['again'][user.lan] + '\n' + texts[State.GET_PHONE][user.language])
+            current_message = await message.reply(text=texts['errors']['again'][user.language] + '\n' + texts[State.GET_PHONE][user.language], reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
+            user.current_message_id = current_message.message_id
+            user.last_interaction = datetime.now()
+            client.users.update(user.to_dict(), ['id'])
+            client.db.commit()
             return False
         return True 
     return filters.create(func)

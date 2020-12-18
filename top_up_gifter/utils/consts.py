@@ -18,10 +18,9 @@ This is possible for these countries:
 
 'fa':
 '''
-سلام به <B>ربات شارژ هدیه</B> خوش آمدید.
-اگر تا به حال از این ربات شارژ رایگان دریافت نکرده اید، برای دریافت شارژ ۵ هزار تومانی رایگان مراحل را با دقت انجام دهید.
-برای مشاهده تمامی مراحل کلید راهنما را فشار دهید.
-توجه داشته باشید که این هدیه تنها یکبار قابل دریافت است.
+حساب BrightID خود را تایید هویت کنید تا من به شما شارژ رایگان هدیه دهم.
+برای اطلاع از روند احراز هویت به لینک https://brightid.gitbook.io مراجعه کنید
+این هدیه تنها یکبار قابل دریافت است.
 '''
 },
 
@@ -58,13 +57,13 @@ State.GET_PHONE: {
     'en': 
 '''
 Your top-up is all ready! Enter the phone number you want it for!
-e.g. 0930***
+e.g. 0930*
 ''',
 
     'fa': 
 '''
-لطفا مطابق نمونه شماره تلفن خود را به زبان انگلیسی وارد کنید.:
-09031000000
+شماره ای که شارژ را برای آن میخواهید وارد کنید:
+نمونه *0930
 '''
 },
 
@@ -72,8 +71,7 @@ State.CLAIMED: {
     'en':
 '''Tada!
 The phone number you entered has received a top-up!
-Your top-up serial number is: *
-''',
+Your top-up serial number is: ''',
 
     'fa':
 '''
@@ -81,18 +79,51 @@ Your top-up serial number is: *
 
 هدیه دریافت شد.
 
-کد پشتیبانی: 
-'''
+کد پشتیبانی: '''
 },
 
 'errors':{
-    'again':{
-        'en': '***Try again***',
+    'again': {
+        'en': '**Try again**',
 
-        'fa': '***دوباره تلاش کنید***'
+        'fa': '**دوباره تلاش کنید**'
     },
 
-    'not_linked':{
+    'multiple_queries': {
+        'en':
+'''
+Please wait until reaching the response.
+''',
+        'fa':
+'''
+لطفا تا دریافت جواب کمی صبر کنید.
+'''
+    },
+
+    'not_valid_query': {
+        'en':
+'''
+This in not a permitted query.
+''',
+        'fa':
+'''
+این درخواست مجاز نیست.
+'''
+    },
+
+    'not_valid_message': {
+        'en':
+'''
+This message is expired.
+''',
+
+        'fa':
+'''
+این پیام منقضی شده است.
+'''
+    },
+
+    'not_linked': {
         'en': 
 '''
 Sorry but you did not link your BrightID account to our app.

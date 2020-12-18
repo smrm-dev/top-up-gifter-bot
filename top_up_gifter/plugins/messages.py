@@ -33,7 +33,6 @@ async def start_handler(client: TopUpGifter, message: Message):
                                  lang='en',
                                  state=State.START,
                                  currentMessageId=current_message.message_id,
-                                 isWaitingForPhone=False,
                                  operator='_',
                                  isAwarded=False,
                                  refCode='_',
@@ -48,32 +47,19 @@ async def send_top_up(client: TopUpGifter, message: Message):
     user_info = client.users.find_one(id=user_id)
     user = User(user_info)
     credit_seller_url = 'https://inax.ir/webservice.php'
-    data = {
-        "method":"topup",
-        "username":"96512277d3f423e0e3bf4a9e06c5b0a8", 
-        "password":"telbotvpayment",
-        "amount":"5000",
-        "operator": user.operator,
-        "mobile": message.text,
-        "charge_type":"normal",
-        # "order_id": str(query.from_user.id),
-        # "order_id": str(datetime.now()),
-        # "order_id":"3",
-        "order_id": str(randint(5,10000)),
-        "company":"top-up-gifter"
-    }
 
     data = {
         "method": "topup",
         "username": "<inax.ir_username>",
         "password": "<inax.ir_password>",
-        "amount": "<amount of credit card in IRT>",
+        "amount": "<amount of top-up in IRT>",
         "operator": user.operator,
         "mobile": message.text,
         "charge_type": "normal",
-        "order_id": str(query.from_user.id),
+        # "order_id": str(query.from_user.id),
+        "order_id": str(randint(5,10000)),
         # "order_id": "3",
-        "company": "top-up gifter bot"
+        "company": "top-up-gifter"
     }
 
     result = await post(url=credit_seller_url, json=data)
@@ -82,7 +68,8 @@ async def send_top_up(client: TopUpGifter, message: Message):
         result = loads(result.text)
         if result['code'] == 1:
             logging.info(f'{user_id} : Award claimed!')
-            current_message = await message.reply(text=texts[State.CLAIMED][user.language])
+            current_message = await message.reply(text=texts[State.CLAIMED][user.language] + result['ref_code'])
+            user.state = State.CLAIMED
             user.current_message_id = current_message.message_id
             user.last_interaction = datetime.now()
             user.is_awarded = True                          

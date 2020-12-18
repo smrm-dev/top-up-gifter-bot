@@ -14,24 +14,27 @@ from ..utils.filters import *
 
 
 @TopUpGifter.on_callback_query(is_multiple_query())
-def initiail(client: TopUpGifter, query: CallbackQuery):
-    logging.info('here')
-    query.answer(text='hey', show_alert=True)
-    pass
+def prevent_multiple_queries_from_a_user(client: TopUpGifter, query: CallbackQuery):
+    user_id = str(query.from_user.id)
+    user_info = dict(client.users.find_one(id=user_id))    
+    user = User(user_info)
+    query.answer(text=texts['errors']['multiple_queries'][user.language], show_alert=True)
 
 
 @TopUpGifter.on_callback_query(is_not_valid_message())
-def initiail2(client: TopUpGifter, query: CallbackQuery):
-    print('here1')
-#     query.answer(text=texts['errors']['not_valid_message'][user.language], show_alert=True)
-    pass
+def bypass_invalid_messages(client: TopUpGifter, query: CallbackQuery):
+    user_id = str(query.from_user.id)
+    user_info = dict(client.users.find_one(id=user_id))    
+    user = User(user_info)
+    query.answer(text=texts['errors']['not_valid_message'][user.language], show_alert=True)
 
 
 @TopUpGifter.on_callback_query(is_not_valid_query())
-def initiail3(client: TopUpGifter, query: CallbackQuery):
-    print('here2')
-#     query.answer(text=texts['errors']['not_valid_query'][user.language], show_alert=True)
-    pass
+def bypass_invalid_queries(client: TopUpGifter, query: CallbackQuery):
+    user_id = str(query.from_user.id)
+    user_info = dict(client.users.find_one(id=user_id))    
+    user = User(user_info)
+    query.answer(text=texts['errors']['not_valid_query'][user.language], show_alert=True)
 
 
 @TopUpGifter.on_callback_query(equality_filter('back'))
@@ -88,7 +91,7 @@ async def linking_step(client: TopUpGifter, query: CallbackQuery):
     query_data = query.data.split(',')
     action = query_data[0]
     deep_link = brightid.tools.create_deep_link(client.app_name, user.context_id)
-    qr_code_base_64 = brightid.tools.create_qr(deep_link)
+    qr_code_base_64 = brightid.tools.create_qr(deep_link, scale=10)
     qr_code = base64.b64decode(qr_code_base_64)
     filename = f'{user.context_id}.jpg'
     with open(filename, 'wb') as f:
@@ -129,6 +132,7 @@ async def get_phone(client: TopUpGifter, query: CallbackQuery):
     action = query_data[0]
     current_message = await query.message.reply(text=texts[State.GET_PHONE][user.language], reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
     user.state = State.GET_PHONE
+    user.current_message_id = current_message.message_id
     user.last_interaction = datetime.now()
     client.users.update(user.to_dict(), ['id'])
     client.db.commit()

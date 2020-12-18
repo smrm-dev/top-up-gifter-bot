@@ -6,7 +6,6 @@ class User:
         self.language = user_info['lang']
         self.state = user_info['state']
         self.current_message_id = user_info['currentMessageId']
-        self.is_waiting_for_phone = user_info['isWaitingForPhone']
         self.operator = user_info['operator']
         self.is_awarded = user_info['isAwarded']
         self.ref_code = user_info['refCode']
@@ -21,7 +20,6 @@ class User:
                     lang=self.language,
                     state=self.state,
                     currentMessageId=self.current_message_id,
-                    isWaitingForPhone=self.is_waiting_for_phone,
                     operator=self.operator,
                     isAwarded=self.is_awarded,
                     refCode=self.ref_code,
