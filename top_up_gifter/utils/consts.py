@@ -7,13 +7,15 @@ State.START: {
 
 'en':
 '''
-Get yourself a verified BrightID account and I'll give you a free top-up for your mobile!
-Learn more about BrightID and how to get verified at https://brightid.gitbook.io 
-I can only do this for you once!
-This is possible for these countries:
-..🇮🇷.. IRAN
-"Let's begin!"
+☀️ Get yourself a verified BrightID account and I'll give you a free top-up for your mobile!
 
+📖 Learn more about BrightID and how to get verified at https://brightid.gitbook.io 
+
+⚡️ I can only do this for you once!
+
+This is possible for these countries:
+
+    🇮🇷 IRAN
 ''',
 
 'fa':
@@ -28,10 +30,13 @@ State.LINK: {
 
 'en':
 '''
-Show me you are verified on BrightID!
-Scan this QR code with your BrightID app OR tap on the "Link Account" button on your mobile phone.
-Confirm the linking process on BrightID app once it is opened.
-Click "Next" when BrightID app tells you the linking is successful.
+✍🏻 Show me you are verified on BrightID!
+
+🔍 Scan this QR code with your BrightID app OR tap on the "Link Account" button on your mobile phone.
+
+📱 Confirm the linking process on BrightID app once it is opened.
+
+🛎 Click "Next" when BrightID app tells you the linking is successful.
 ''',
 
 'fa':
@@ -44,7 +49,7 @@ Click "Next" when BrightID app tells you the linking is successful.
 State.CHOOSE_OPERATOR: {
     'en':
 '''
-Now choose your network career
+📶 Now choose your network career
 ''',
 
     'fa':
@@ -56,7 +61,7 @@ Now choose your network career
 State.GET_PHONE: {
     'en': 
 '''
-Your top-up is all ready! Enter the phone number you want it for!
+🎁 Your top-up is all ready! Enter the phone number you want it for!
 e.g. 0930*
 ''',
 
@@ -69,17 +74,19 @@ e.g. 0930*
 
 State.CLAIMED: {
     'en':
-'''Tada!
-The phone number you entered has received a top-up!
-Your top-up serial number is: ''',
+'''🎉 Tada!
+
+🚀 The phone number you entered has received a top-up!
+
+🎟 Your top-up serial number is: ''',
 
     'fa':
 '''
 تبریک
 
-هدیه دریافت شد.
+شارژ به شماره ای که وارد کرده بودید ارسال شد.
 
-کد پشتیبانی: '''
+کد پیگیری: '''
 },
 
 'errors':{
@@ -87,6 +94,21 @@ Your top-up serial number is: ''',
         'en': '**Try again**',
 
         'fa': '**دوباره تلاش کنید**'
+    },
+
+    'phone_number':{
+        '11':{
+            'en': '❌ Phone number length is not correct.',
+            'fa': '❌ طول شماره تلفن وارد شده بیش از حد مجاز است.'
+        },
+        '09':{
+            'en': '❌ Phone number should start with 09',
+            'fa': '❌ شماره تلفن باید با 09 شروع شود.'
+        },
+        'is_not_digit':{
+            'en': '❌ Phone number should be number.',
+            'fa': '❌ شماره تلفن تنها می تواند عدد باشد.'
+        }
     },
 
     'multiple_queries': {
@@ -208,14 +230,14 @@ Please try again or contact customer support.
 keyborads = {
     State.START: {
         'en': [
-            [InlineKeyboardButton(text='Start', callback_data='link,')],
-            [InlineKeyboardButton(text='Help', url='google.com')],
+            [InlineKeyboardButton(text='Let\'s begin!', callback_data='link,')],
+            [InlineKeyboardButton(text='Help', url='https://mrmousavi.medium.com/top-up-gifter-e03442f77d1e')],
             [InlineKeyboardButton(text='🇮🇷', callback_data='fa,'), InlineKeyboardButton(text='🇬🇧', callback_data='en,')],
         ],
 
         'fa': [
             [InlineKeyboardButton(text='شروع', callback_data='link,')],
-            [InlineKeyboardButton(text='راهنما', url='google.com')],
+            [InlineKeyboardButton(text='راهنما', url='https://mrmousavi.medium.com/top-up-gifter-e03442f77d1e')],
             [InlineKeyboardButton(text='🇮🇷', callback_data='fa,'), InlineKeyboardButton(text='🇬🇧', callback_data='en,')],
         ]
     },

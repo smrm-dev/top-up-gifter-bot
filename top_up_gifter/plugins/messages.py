@@ -4,6 +4,7 @@ from pyrogram.types import CallbackQuery, ChatPermissions, InlineKeyboardButton,
 from datetime import datetime
 from requests import post
 from json import loads
+from random import randint
 
 from ..TopUpGifter import TopUpGifter
 from ..utils.consts import texts, keyborads
@@ -47,28 +48,36 @@ async def send_top_up(client: TopUpGifter, message: Message):
     user_info = client.users.find_one(id=user_id)
     user = User(user_info)
     credit_seller_url = 'https://inax.ir/webservice.php'
+    # current_message = await message.reply(text=texts[State.CLAIMED][user.language] + '23456412')
+    # user.state = State.CLAIMED
+    # user.current_message_id = current_message.message_id
+    # user.last_interaction = datetime.now()
+    # user.is_awarded = True                          
+    # user.ref_code = '23456412'
+    # client.users.update(user.to_dict(),['id'])
+    # client.db.commit()
+    # return
 
     data = {
         "method": "topup",
         "username": "<inax.ir_username>",
         "password": "<inax.ir_password>",
-        "amount": "<amount of top-up in IRT>",
+        "amount": "<amount of credit card in IRT>",
         "operator": user.operator,
         "mobile": message.text,
         "charge_type": "normal",
-        # "order_id": str(query.from_user.id),
-        "order_id": str(randint(5,10000)),
+        "order_id": str(randint(6,10000)),
         # "order_id": "3",
-        "company": "top-up-gifter"
+        "company": "top-up gifter bot"
     }
 
-    result = await post(url=credit_seller_url, json=data)
+    result = post(url=credit_seller_url, json=data)
     if result.status_code == 200:
         logging.info(f'{user_id} : 200')
         result = loads(result.text)
         if result['code'] == 1:
             logging.info(f'{user_id} : Award claimed!')
-            current_message = await message.reply(text=texts[State.CLAIMED][user.language] + result['ref_code'])
+            current_message = await message.reply(text=texts[State.CLAIMED][user.language] + str(result['ref_code']))
             user.state = State.CLAIMED
             user.current_message_id = current_message.message_id
             user.last_interaction = datetime.now()
@@ -79,5 +88,6 @@ async def send_top_up(client: TopUpGifter, message: Message):
 
         else:
             logging.info(f'{user_id} : Fail to claim!')
+            logging.info(result['msg'])
     else:
         logging.info(f'{user_id} : bad status')

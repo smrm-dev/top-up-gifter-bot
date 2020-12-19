@@ -3,6 +3,7 @@ from pyrogram.types import CallbackQuery, Message, InlineKeyboardMarkup
 from datetime import datetime
 from time import time
 import brightid
+import logging
 
 from .User import User
 from .State import State
@@ -77,21 +78,26 @@ def back_filter(state: State):
 
 
 def is_verified_and_not_awarded():
-    def func(flt, client: TopUpGifter, query:CallbackQuery):
+    async def func(flt, client: TopUpGifter, query:CallbackQuery):
         user_id = str(query.from_user.id)
         with client.db as db:
             user_info = dict(client.users.find_one(id=user_id))
             user = User(user_info)
-            user_brightid_info = client.node.verifications.get(client.app_name, context_id=user.context_id)
-            if user_brightid_info.get('error'):
-                if user_brightid_info['errorNum'] == 2:
-                    query.answer(text=texts['errors']['not_linked'][user.language], show_alert=True)
+            try:
+                user_brightid_info = client.node.verifications.get(client.app_name, context_id=user.context_id)
+            except RuntimeError as error:
+                logging.info(error)
+                if error == 'contextId not found':
+                # if user_brightid_info['errorNum'] == 2:
+                    await query.answer(text=texts['errors']['not_linked'][user.language], show_alert=True)
                     return False
-                elif user_brightid_info['errorNum'] == 3:
-                    query.answer(text=texts['errors']['not_verified'][user.language], show_alert=True)
+                elif error == 'user can not be verified for this verification expression':
+                # elif user_brightid_info['errorNum'] == 3:
+                    await query.answer(text=texts['errors']['not_verified'][user.language], show_alert=True)
                     return False
-                elif user_brightid_info['errorNum'] == 4:
-                    query.answer(text=texts['errors']['not_sponsored'][user.language], show_alert=True)
+                elif error == 'user is not sponsored':
+                # elif user_brightid_info['errorNum'] == 4:
+                    await query.answer(text=texts['errors']['not_sponsored'][user.language], show_alert=True)
                     op = {
                         'name': 'Sponsor',
                         'contextId': user.context_id,
@@ -99,15 +105,16 @@ def is_verified_and_not_awarded():
                         'timestamp': int(time() * 1000),
                         'v': 5
                     }
-
                     op['sig'] = brightid.tools.sign(op, client.sponsor_private_key)
-                    client.node.operations.post(op)
+                    await client.node.operations.post(op)
                     return False
-
+                else:
+                    await query.answer(text=texts['errors']['our_side'][user.language], show_alert=True)
+                    return False                   
             else:
                 user_accounts_reward_status = [user_info['isAwarded'] for user_info in client.users.find(contextId=user_brightid_info['contextIds'])]
                 if True in user_accounts_reward_status:
-                    query.answer(text=texts['errors']['awarded'][user.language], show_alert=True)
+                    await query.answer(text=texts['errors']['awarded'][user.language], show_alert=True)
                     return False
                 return True
     return filters.create(func)
@@ -148,21 +155,30 @@ def check_phone():
         user_info = dict(client.users.find_one(id=user_id))
         user = User(user_info)
         if len(message.text) != 11:         
-            current_message = await message.reply(text=texts['errors']['again'][user.language] + '\n' + texts[State.GET_PHONE][user.language], reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
+            current_message = await message.reply(text=texts['errors']['phone_number']['11'][user.language] + '\n\n' + 
+                                                       texts['errors']['again'][user.language] + '\n' +
+                                                       texts[State.GET_PHONE][user.language], 
+                                                  reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
             user.current_message_id = current_message.message_id
             user.last_interaction = datetime.now()
             client.users.update(user.to_dict(), ['id'])
             client.db.commit()
             return False
         elif message.text[:2] != '09':
-            current_message = await message.reply(text=texts['errors']['again'][user.language] + '\n' + texts[State.GET_PHONE][user.language], reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
+            current_message = await message.reply(text=texts['errors']['phone_number']['09'][user.language] + '\n\n' + 
+                                                       texts['errors']['again'][user.language] + '\n' +
+                                                       texts[State.GET_PHONE][user.language], 
+                                                  reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
             user.current_message_id = current_message.message_id
             user.last_interaction = datetime.now()
             client.users.update(user.to_dict(), ['id'])
             client.db.commit()
             return False
         elif not message.text.isdigit():
-            current_message = await message.reply(text=texts['errors']['again'][user.language] + '\n' + texts[State.GET_PHONE][user.language], reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
+            current_message = await message.reply(text=texts['errors']['phone_number']['is_not_digit'][user.language] + '\n\n' + 
+                                                       texts['errors']['again'][user.language] + '\n' +
+                                                       texts[State.GET_PHONE][user.language], 
+                                                  reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
             user.current_message_id = current_message.message_id
             user.last_interaction = datetime.now()
             client.users.update(user.to_dict(), ['id'])

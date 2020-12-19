@@ -91,9 +91,10 @@ async def linking_step(client: TopUpGifter, query: CallbackQuery):
     query_data = query.data.split(',')
     action = query_data[0]
     deep_link = brightid.tools.create_deep_link(client.app_name, user.context_id)
-    qr_code_base_64 = brightid.tools.create_qr(deep_link, scale=10)
+    qr_deep_link = brightid.tools.create_deep_link(client.app_name, user.context_id, schema='brightid')
+    qr_code_base_64 = brightid.tools.create_qr(qr_deep_link, scale=10)
     qr_code = base64.b64decode(qr_code_base_64)
-    filename = f'{user.context_id}.jpg'
+    filename = f'{user.context_id}.png'
     with open(filename, 'wb') as f:
         f.write(qr_code)
     await query.message.reply_photo(filename)
@@ -132,6 +133,7 @@ async def get_phone(client: TopUpGifter, query: CallbackQuery):
     action = query_data[0]
     current_message = await query.message.reply(text=texts[State.GET_PHONE][user.language], reply_markup=InlineKeyboardMarkup(keyborads[State.GET_PHONE][user.language]))
     user.state = State.GET_PHONE
+    user.operator = query_data[1]
     user.current_message_id = current_message.message_id
     user.last_interaction = datetime.now()
     client.users.update(user.to_dict(), ['id'])

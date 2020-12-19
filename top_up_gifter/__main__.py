@@ -14,5 +14,5 @@ if __name__ == "__main__":
                 db=db,
                 node=node,
                 app_name='top-up-gifter',
-                sponsor_private_key='<SPONSER_PRIVATE_KEY>'
+                sponsor_private_key='<SPONSOR_PRIVATE_KEY>'
             ).run()
