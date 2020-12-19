@@ -87,15 +87,15 @@ def is_verified_and_not_awarded():
                 user_brightid_info = client.node.verifications.get(client.app_name, context_id=user.context_id)
             except RuntimeError as error:
                 logging.info(error)
-                if error == 'contextId not found':
+                if str(error) == 'contextId not found':
                 # if user_brightid_info['errorNum'] == 2:
                     await query.answer(text=texts['errors']['not_linked'][user.language], show_alert=True)
                     return False
-                elif error == 'user can not be verified for this verification expression':
+                elif str(error) == 'user can not be verified for this app':
                 # elif user_brightid_info['errorNum'] == 3:
                     await query.answer(text=texts['errors']['not_verified'][user.language], show_alert=True)
                     return False
-                elif error == 'user is not sponsored':
+                elif str(error) == 'user is not sponsored':
                 # elif user_brightid_info['errorNum'] == 4:
                     await query.answer(text=texts['errors']['not_sponsored'][user.language], show_alert=True)
                     op = {
@@ -106,7 +106,7 @@ def is_verified_and_not_awarded():
                         'v': 5
                     }
                     op['sig'] = brightid.tools.sign(op, client.sponsor_private_key)
-                    await client.node.operations.post(op)
+                    client.node.operations.post(op)
                     return False
                 else:
                     await query.answer(text=texts['errors']['our_side'][user.language], show_alert=True)

@@ -26,7 +26,6 @@ async def start_handler(client: TopUpGifter, message: Message):
         user.current_message_id = current_message.message_id
         user.last_interaction = datetime.now()
         client.users.update(user.to_dict(), ['id'])
-        client.db.commit()
     else:
         client.users.insert(dict(
                                  id=user_id,
@@ -40,6 +39,7 @@ async def start_handler(client: TopUpGifter, message: Message):
                                  lastInteraction = datetime.now()
                                 )
                             )
+    client.db.commit()
 
 
 @TopUpGifter.on_message(is_waiting_for_phone() & check_phone())
